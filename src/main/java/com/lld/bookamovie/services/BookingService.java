@@ -56,20 +56,28 @@ public class BookingService {
           9. return the booking object
          */
         Booking booking = new Booking();
+
+        // Get the user from DB by iven id
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
             throw new RuntimeException("User was not found");
         }
         booking.setUser(optionalUser.get());
+
+        // get the show from DB by given id
         Optional<Show> optionalShow = showRepository.findById(showId);
         if (optionalShow.isEmpty()) {
             throw new RuntimeException("Show was not found");
         }
         booking.setShow(optionalShow.get());
 
+        // get the list of show seats from DB by given ids
         List<ShowSeat> showSeats = showSeatRepository.findAllById(showSeatIds);
+
+        // Check if all the seats are available
         boolean isAllSeatsAvailable = isAllSeatsAvailable(showSeats);
 
+        // if not, throw exception
         if (!isAllSeatsAvailable) {
             throw new RuntimeException("Some or all seats are not available");
         }
@@ -80,12 +88,16 @@ public class BookingService {
                 .collect(Collectors.toList())
         );
 
+        // create the booking with pending status
         booking.setShowSeats(showSeats);
         booking.setBookingStatus(BookingStatus.PENDING);
         booking.setTotalAmount(450);
         booking.setNumber("BLR34567");
 
+        // save booking obj to DB
         booking = bookingRepository.save(booking);
+
+        // return the booking object
         return booking;
     }
 
