@@ -12,10 +12,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public User singUp(String name, String email, String password) {
@@ -25,9 +27,6 @@ public class UserService {
         3. If not, create a new user object with given details
         4. Save it to DB
          */
-
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
         User user = new User();
         user.setName(name);
         user.setEmail(email);
@@ -47,7 +46,6 @@ public class UserService {
          User user = optionalUser.get();
 
          // Compare the password
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         if (bCryptPasswordEncoder.matches(password, user.getPassword())) {
             // Login successful
             return user;
